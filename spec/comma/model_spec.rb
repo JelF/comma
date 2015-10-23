@@ -1,3 +1,5 @@
+require 'comma/extensions/validation'
+
 describe Comma::Model do
   class MyType < Comma::Type
     def valid?
@@ -7,16 +9,11 @@ describe Comma::Model do
 
   class Subject
     include Comma::Model
+    include Comma::Extensions::Validation
 
     comma_attribute :foo
     comma_attribute :bar, MyType
     comma_attribute :baz, MyType, should_be: 1
-
-    def valid?
-      comma_mountpoints.reduce(true) do |acc, x|
-        x.respond_to?(:valid?) ? (acc && x.valid?) : acc
-      end
-    end
   end
 
   subject { Subject.new }
@@ -32,6 +29,11 @@ describe Comma::Model do
     before { subject.foo = 123 }
     before { subject.bar = :bar }
     before { subject.baz = :baz }
-    it { is_expected.not_to be_valid }
+
+    it 'proxies errors' do
+      expect(subject).not_to be_valid
+      expect(subject.errors.messages)
+        .to match(baz: [include('invalid_mountpoint')])
+    end
   end
 end
