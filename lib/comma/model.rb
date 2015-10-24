@@ -5,7 +5,7 @@ module Comma
   module Model
     # ClassMethods extended when module included
     module ClassMethods
-      def comma_attribute(name, type = Comma::Type, **options)
+      def _comma_define_attribute(name, type = Comma::Type, **options)
         type.mount!(name, self, options)
         _comma_mountpoints << name
       end
@@ -19,6 +19,13 @@ module Comma
 
     def self.included(base)
       base.extend(ClassMethods)
+
+      class << base
+        alias_method ::Comma::CONFIG.attribute_definer_name,
+                     :_comma_define_attribute
+      end
+
+      CONFIG.autoload_extensions.each { |x| base.include(x) }
     end
 
     private

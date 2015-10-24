@@ -2,6 +2,8 @@ module Comma
   module Extensions
     # Something like ActiveSupport::Concern
     module Concern
+      attr_reader :config
+
       def included(base = nil, &block)
         if block
           callbacks << block
@@ -20,8 +22,11 @@ module Comma
 
       private
 
+      attr_accessor :default_strategy
+
       def _included(base)
-        include_strategy!(base)
+        strategy = CONFIG[self] && CONFIG[self][:strategy]
+        include_strategy!(strategy || default_strategy)
 
         class_methods = begin
                           const_get(:ClassMethods)
@@ -32,9 +37,9 @@ module Comma
         callbacks.each { |callback| base.instance_exec(base, &callback) }
       end
 
-      def include_strategy!(_base)
-        if default_strategy
-          callbacks << strategies[default_strategy]
+      def include_strategy!(strategy)
+        if strategy
+          callbacks << strategies.fetch(strategy)
         elsif strategies.any?
           # Hash#first[1] => first value
           callbacks << strategies.first[1]
@@ -48,8 +53,6 @@ module Comma
       def strategies
         @strategies ||= {}
       end
-
-      attr_accessor :default_strategy
     end
   end
 end

@@ -35,7 +35,11 @@ module Comma
     end
 
     def value
-      representation
+      if mountpoint.instance_variable_defined?(instance_var)
+        representation
+      elsif options.key?(:default)
+        self.value = options[:default]
+      end
     end
 
     def value=(x)
