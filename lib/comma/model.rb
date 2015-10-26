@@ -10,6 +10,10 @@ module Comma
         _comma_mountpoints << name
       end
 
+      def comma_extension(type, config = CONFIG[type.name])
+        type.new(config).mount!(self)
+      end
+
       private
 
       def _comma_mountpoints

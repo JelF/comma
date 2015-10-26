@@ -9,7 +9,7 @@ describe Comma::Model do
 
   class Subject
     include Comma::Model
-    include Comma::Extensions::Validation
+    comma_extension Comma::Extensions::Validation
 
     comma_attribute :foo
     comma_attribute :bar, MyType

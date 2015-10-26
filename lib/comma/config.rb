@@ -35,7 +35,7 @@ module Comma
     end
 
     def [](key)
-      extensions[key]
+      extensions.fetch(key, {})
     end
   end
 end

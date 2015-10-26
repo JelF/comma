@@ -1,11 +1,9 @@
-require 'comma/extensions/concern'
+require 'comma/extension'
 
 module Comma
   module Extensions
     # provides `valid` method or extend validations
-    module Validation
-      extend Concern
-
+    class Validation < Extension
       strategy :greedy_include_active_model do
         require 'active_model'
 
